@@ -9,7 +9,7 @@
 # the `language` matrix defined below to confirm you have the correct set of
 # supported CodeQL languages.
 #
-name: "CodeQL CMake Build WIN+NIX+OSX"
+name: "Analyze & Build & Test"
 
 on:
   push:
