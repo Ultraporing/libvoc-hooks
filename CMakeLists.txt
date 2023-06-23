@@ -1,3 +1,4 @@
+# Minimum required version.
 cmake_minimum_required(VERSION 3.23)
 
 # Configuration of the project needs to set VERSION to generate .cmake files and
