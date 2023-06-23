@@ -1,3 +1,3 @@
 # libvoc-hooks
-![Dev branch status](https://github.com/Ultraporing/libvoc-hooks/actions/workflows/cmake.yml/badge.svg?branch=dev)  
+[![CMake](https://github.com/Ultraporing/libvoc-hooks/actions/workflows/cmake.yml/badge.svg)](https://github.com/Ultraporing/libvoc-hooks/actions/workflows/cmake.yml)  
 Library for hooking Programs and Windows for streaming and input purposes.
