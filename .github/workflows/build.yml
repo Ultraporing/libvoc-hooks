@@ -4,8 +4,8 @@ on:
   push:
     branches: [ "dev" ]
   pull_request:
-    # The branches below must be a subset of the branches above
     branches: [ "dev" ]
+  workflow_dispatch:
     
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
