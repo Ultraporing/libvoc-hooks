@@ -47,7 +47,7 @@ jobs:
       id: restore-cache
       with:
         path: ./*
-        key: ${{ steps.cache-code.outputs.cache-primary-key }}
+        key: code-${{ github.sha }}
         enableCrossOsArchive: true
 
     # Initializes the CodeQL tools for scanning.
