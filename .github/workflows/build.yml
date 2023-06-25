@@ -12,6 +12,18 @@ env:
   BUILD_TYPE: Release
 
 jobs:
+  cache-code:
+    name: Download and Cache Code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.3
+      - uses: actions/cache/save@v3.2.6
+        id: cache-code
+        with:
+          path: ./*
+          key: code-${{ github.sha }} # Can use time based key as well
+          enableCrossOsArchive: true
+
   analyze:
     name: Analyze on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -26,14 +38,15 @@ jobs:
       matrix:
         language: [ 'cpp' ]
         os: [ubuntu-latest, windows-latest, macOS-latest]
-        # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby', 'swift' ]
-        # Use only 'java' to analyze code written in Java, Kotlin or both
-        # Use only 'javascript' to analyze code written in JavaScript, TypeScript or both
-        # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+    - name: Restore repository from Cache
+      uses: actions/cache/restore@v3
+      id: restore-cache
+      with:
+        path: ./*
+        key: ${{ steps.cache-code.outputs.cache-primary-key }}
+        enableCrossOsArchive: true
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
@@ -75,3 +88,30 @@ jobs:
       uses: github/codeql-action/analyze@v2
       with:
         category: "/language:${{matrix.language}}"
+        
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        
+      - name: Cleanup
+        run: |
+          gh extension install actions/gh-actions-cache
+          
+          REPO=${{ github.repository }}
+          BRANCH="refs/pull/${{ github.event.pull_request.number }}/merge"
+
+          echo "Fetching list of cache key"
+          cacheKeysForPR=$(gh actions-cache list -R $REPO -B $BRANCH | cut -f 1 )
+
+          ## Setting this to not fail the workflow while deleting cache keys. 
+          set +e
+          echo "Deleting caches..."
+          for cacheKey in $cacheKeysForPR
+          do
+              gh actions-cache delete $cacheKey -R $REPO -B $BRANCH --confirm
+          done
+          echo "Done"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
